@@ -11,8 +11,9 @@
  *    ['blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank'],
  *    ['blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank'],
  *    ['blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank'],
- *    ['blank', 'blank', 'blank', 'red', 'blank', 'blank', 'blank']
+ *    ['blank', 'blank', 'blank', 'red',   'blank', 'blank', 'blank']
  * ]
+ *
  * You can see that each inner array is a row.  The strings in each inner array
  * represent the state of each slot in the row.  'blank' means that there has been
  * no move there and it will be drawn as white on the UI.  'red' means that the red

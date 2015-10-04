@@ -1,7 +1,7 @@
 /**
  * This module will handle the game initialization when a user goes to the index page.
  * When everything is loaded it will show all of the games that are available to join
- * on the server or let a user create their own game.  Once there are two players in the
+ * on the server or let a user create thier own game.  Once there are two players in the
  * game the user has joined the UI will tell the user the game has begun and it will allow
  * each player to take turns making moves.
  *
@@ -77,7 +77,7 @@ window.addEventListener('DOMContentLoaded', function () {
       // the array is 0 indexed we will round this down with Math.floor to get 2.  That is how
       // we will be mapping clicks to the underlying game state array.
       var columnWidthInPixels = document.getElementById('gameBoard').width / gameBoard.NUM_COLS_ON_BOARD;
-      var columnIndex = Math.floor(clickEvent.clientX/ columnWidthInPixels);
+      var columnIndex = Math.floor(clickEvent.clientX / columnWidthInPixels);
 
       // We are now going to go through the board and see if we can move the player
       // to the column they wanted to.  Becasue in connect four you drop the piece and
