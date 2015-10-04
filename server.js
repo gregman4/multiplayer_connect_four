@@ -23,6 +23,9 @@ var io = require('socket.io')(server);
  */
 var games = {};
 
+// We will allow two players per game.
+var MAX_NUM_PLAYERS = 2;
+
 server.listen(process.env.PORT || 80);
 // Just using express here to serve the static index.html file, the rest will happen with sockets.
 app.use(express.static(__dirname));
@@ -67,7 +70,7 @@ function initPlayerSocket(socket) {
     var openGameNames = [];
     for (var gameName in games) {
       // Make sure we are not going to the objects primitive properties.
-      if (games.hasOwnProperty(gameName) && games[gameName].players.length < 2) {
+      if (games.hasOwnProperty(gameName) && games[gameName].players.length < MAX_NUM_PLAYERS) {
         openGameNames.push(gameName);
       }
     }
@@ -109,7 +112,7 @@ function initPlayerSocket(socket) {
    * @param {String} gameName The name of the game the user is looking to join.
    */
   function addPlayerToGame (gameName) {
-    if (games[gameName] && (games[gameName].players.length < 2)) {
+    if (games[gameName] && (games[gameName].players.length < MAX_NUM_PLAYERS)) {
       // Ok we are adding this player to the game they wanted because there was an open slot.
       // We will store the game name that they are a part of on the socket object.
       socket.gameName = gameName;
@@ -123,7 +126,7 @@ function initPlayerSocket(socket) {
 
       // If there are now two players in this game we need to tell all of the players
       // in this game that the game is about to start.
-      if (games[gameName].players.length === 2) {
+      if (games[gameName].players.length === MAX_NUM_PLAYERS) {
         for (var i = 0; i < games[gameName].players.length; i++) {
           games[gameName].players[i].emit('gameStarted', {currentTurnColor: games[gameName].currentTurnColor});
         }
@@ -224,14 +227,14 @@ function isGameOver(gameState) {
   for (var row = 0; row < gameState.length; row++) {
     for (var col = 0; col < gameState[row].length; col++) {
       // Look diagonal right downward from this current piece.
-      if (gameState[row+3] && gameState[row+3][col+3]) {
-        var diagRight = [gameState[row][col], gameState[row+1][col+1], gameState[row+2][col+2], gameState[row+3][col+3]];
+      if (gameState[row-3] && gameState[row-3][col+3]) {
+        var diagRight = [gameState[row][col], gameState[row-1][col+1], gameState[row-2][col+2], gameState[row-3][col+3]];
         var diagRightString = diagRight.join();
         if (diagRightString.match(/red,red,red,red/) || diagRightString.match(/blue,blue,blue,blue/)) {
           return true;
         }
       }
-      // Now we will check the diag left way.
+      // Now we will check the downward and diagonal left way.
       if (gameState[row-3] && gameState[row-3][col-3]) {
         var diagLeft = [gameState[row][col], gameState[row-1][col-1], gameState[row-2][col-2], gameState[row-3][col-3]];
         var diagLeftString = diagLeft.join();
