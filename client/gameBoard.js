@@ -1,90 +1,108 @@
 /**
- * This is a client for a multiplayer connect four game.  The client will be in charge of
- * showing the user what games are available to join, letting the user create a new game,
- * letting the user set their name for game play and rendering the board.
+ * This is a module to create a connect four game board, and render updated
+ * versions of this board.  For this board we will use a 2d array.  The following
+ * 2d array will represent an board that has a single red piece dropped in the middle
+ * column:
+ *
+ * [
+ *    ['blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank'],
+ *    ['blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank'],
+ *    ['blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank'],
+ *    ['blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank'],
+ *    ['blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank'],
+ *    ['blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank'],
+ *    ['blank', 'blank', 'blank', 'red', 'blank', 'blank', 'blank']
+ * ]
+ * You can see that each inner array is a row.  The strings in each inner array
+ * represent the state of each slot in the row.  'blank' means that there has been
+ * no move there and it will be drawn as white on the UI.  'red' means that the red
+ * player holds this spot and it will be drawn on the UI as red.  'blue' means that
+ * the blue player holds this spot and it will be drawn on the UI as blue.
  *
  * @author  Jake Dean <jbd74@cornell.edu>
  */
 
+// Just map the owners of each slot on the board to thier hex code for rendering the
+// correct color.
 var colorToHexMapper = {
-	'blank': '#fff',
-	'red'  : '#f00',
-	'blue' : '#00f'
+  'blank': '#fff',
+  'red'  : '#f00',
+  'blue' : '#00f'
 }
 
+// 7 columns and 6 rows on a connect four board.
+var NUM_COLS_ON_BOARD = 7;
+var NUM_ROWS_ON_BOARD = 6;
+
+// The arrays of columns and rows are 0 indexed so to avoid doing " rows - 1" in the
+// code I will add these constants to get the max index for rows and cols.  Not required
+// just to keep things cleaner.
+var MAX_COL_INDEX = 6;
+var MAX_ROW_INDEX = 5;
+
+// Get our canvas and context so we can draw on the canvas.
 var myCanvas = document.getElementById('gameBoard');
 var ctx = myCanvas.getContext('2d');
 
 /**
- * We first are going to need to create the game board.  The state of the game will be kept
- * in a 2d array.  There are 6 rows in a connect four board and 7 columns in each row.  So
- * the data structure we have here is going to be an outer array with 6 inner arrays in it.
- * It will look like this:
- * [
- * 		['blank', 'blank', 'blank', 'blank', 'blank', 'blank', 'blank'],
- * 		... (5 more arrays like the first index above.)
- * ]
+ * Create our 2d array representation of the game board and render it on the
+ * screen for the user to see the blank board.
+ *
+ * @return {Array} The game state array so the consumer can have it for logic it wants to
+ *                 carry out to decide of moves players are trying to make are legal.
  */
 function createGameBoard () {
-	var gameState = [];
-	// First add our rows
-	for (var i = 0; i < 6; i++) {
-		gameState.push([]);
-		// Then add the columns to this row.
-		for (var j = 0; j < 7; j++) {
-			gameState[i].push('blank');
-		}
-	}
-	// Now we will draw the outline of the board with of course no moves made because this
-	// is a fresh game.
-	ctx.strokeRect(0,0, myCanvas.width, myCanvas.height);
-	// Now we are going to draw the vertical lines on the board.
-	var colWidthInPixels = myCanvas.width / 7;
-	for (var i = 0; i < myCanvas.width; i+= colWidthInPixels) {
-		ctx.beginPath();
-		ctx.moveTo(i, 0);
-		ctx.lineTo(i, myCanvas.height);
-		ctx.closePath();
-		ctx.stroke();
-	}
-	// Now we are going to draw the horizontal lines on the board, I know this code is repeated a little
-	// bit from the above code but the height and width stuff can get confusing so I am making the
-	// call to just have it more straightforward and hardcoded.
-	var colHeightInPixels = myCanvas.height / 6;
-	for (var j = 0; j < myCanvas.height; j+= colHeightInPixels) {
-		ctx.beginPath();
-		ctx.moveTo(0, j);
-		ctx.lineTo(myCanvas.width, j);
-		ctx.closePath();
-		ctx.stroke();
-	}
-	return gameState;
+  var gameState = [];
+  // First add our empty rows
+  for (var rowIndex = 0; rowIndex <= MAX_ROW_INDEX; rowIndex++) {
+    gameState.push([]);
+    // Then add the columns to this row.
+    for (var colIndex = 0; colIndex <= MAX_COL_INDEX; colIndex++) {
+      gameState[rowIndex].push('blank');
+    }
+  }
+  // Now we will just pass this game state to our render board function so the user
+  // can see the blank board on the screen.
+  renderBoard(gameState);
+  return gameState;
 }
 
 
 /**
 * We are going to go through the game state and color in the pieces correctly
-* based on whether they are open -> white, the black player has moved there
-* -> black, or the red player has moved there -> red.
+* based on whether they are blank -> white, the blue player has moved there
+* -> blue, or the red player has moved there -> red.
+*
+* @param {Array} gameState The 2d array representing the game board.
 */
 function renderBoard(gameState) {
-	var colWidth = myCanvas.width / 7;
-	var rowHeight = myCanvas.height / 6;
-	for (var row = 0; row < gameState.length; row++) {
-		for (var col = 0; col < gameState[row].length; col++) {
-			// For this slot we need to set the fill color then draw the fill.
-			var slotStatus = gameState[row][col];
-			var topLeftX = col * colWidth;
-			var topLeftY = row * rowHeight;
-			ctx.fillStyle = colorToHexMapper[slotStatus];
-			ctx.fillRect(topLeftX, topLeftY, colWidth, rowHeight);
-			ctx.strokeRect(topLeftX, topLeftY, colWidth, rowHeight);
-			ctx.strokStyle = colorToHexMapper['black'];
-		}
-	}
+  var colWidth = myCanvas.width / NUM_COLS_ON_BOARD;
+  var rowHeight = myCanvas.height / NUM_ROWS_ON_BOARD;
+  // We will now loop through each slot on the board and render the correct slot color.
+  for (var rowIndex = 0; rowIndex <= MAX_ROW_INDEX; rowIndex++) {
+    for (var colIndex = 0; colIndex <= MAX_COL_INDEX; colIndex++) {
+      // For this slot we need to set the fill color then draw the fill.
+      var slotStatus = gameState[rowIndex][colIndex];
+      // Now we need to get the x,y coordinate for the top left corner of the
+      // slot we are about to draw.
+      var topLeftX = colIndex * colWidth;
+      var topLeftY = rowIndex * rowHeight;
+      // Set the fill style, stroke style (we want to outline of the box to be black always)
+      // draw the box and fill it with the correct color based on who owns this game slot.
+      ctx.fillStyle = colorToHexMapper[slotStatus];
+      ctx.fillRect(topLeftX, topLeftY, colWidth, rowHeight);
+      ctx.strokeRect(topLeftX, topLeftY, colWidth, rowHeight);
+      ctx.strokStyle = colorToHexMapper['black'];
+    }
+  }
 }
 
+// Expose this API to the consumer of this module.
 module.exports = {
-	createGameBoard: createGameBoard,
-	renderBoard: renderBoard
+  createGameBoard  : createGameBoard,
+  renderBoard      : renderBoard,
+  NUM_ROWS_ON_BOARD: NUM_ROWS_ON_BOARD,
+  NUM_COLS_ON_BOARD: NUM_COLS_ON_BOARD,
+  MAX_ROW_INDEX    : MAX_ROW_INDEX,
+  MAX_COL__INDEX   : MAX_COL_INDEX
 }
