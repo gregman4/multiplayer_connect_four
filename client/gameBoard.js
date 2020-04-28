@@ -27,7 +27,7 @@
 // correct color.
 var colorToHexMapper = {
   'blank': '#fff',
-  'red'  : '#f0f',
+  'red'  : '#f0a',
   'blue' : '#00f'
 }
 
