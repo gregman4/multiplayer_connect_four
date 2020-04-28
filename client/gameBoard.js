@@ -94,7 +94,7 @@ function renderBoard(gameState) {
       //ctx.fillRect(topLeftX, topLeftY, colWidth, rowHeight);
       //ctx.strokeRect(topLeftX, topLeftY, colWidth, rowHeight);
       ctx.beginPath();
-      ctx.arc((topLeftX+colWidth)/2, (topLeftY+colWidth)/2, colWidth/2, 0, 2 * Math.PI);
+      ctx.arc(topLeftX+colWidth/2, topLeftY+rowHeight/2, colWidth/2, 0, 2 * Math.PI);
       ctx.fill();
       ctx.strokeStyle = colorToHexMapper['black'];
     }
