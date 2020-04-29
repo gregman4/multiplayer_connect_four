@@ -90,14 +90,16 @@ function renderBoard(gameState) {
       var topLeftY = rowIndex * rowHeight;
       // Set the fill style, stroke style (we want to outline of the box to be black always)
       // draw the box and fill it with the correct color based on who owns this game slot.
-      ctx.fillStyle = colorToHexMapper[slotStatus];
+      Ω
       //ctx.fillRect(topLeftX, topLeftY, colWidth, rowHeight);
       //ctx.strokeRect(topLeftX, topLeftY, colWidth, rowHeight);
       //ctx.strokStyle = colorToHexMapper['black'];
+      ctx.strokeRect(topLeftX, topLeftY, colWidth, rowHeight);
       ctx.beginPath();
       ctx.arc(topLeftX+colWidth/2, topLeftY+rowHeight/2, colWidth/2, 0, 2 * Math.PI);
       ctx.fill();
       ctx.strokeStyle = colorToHexMapper['black'];
+      ctx.strokeRect(topLeftX, topLeftY, colWidth, rowHeight);
     }
   }
 }
