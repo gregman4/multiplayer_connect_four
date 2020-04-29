@@ -96,6 +96,7 @@ function renderBoard(gameState) {
       //ctx.strokStyle = colorToHexMapper['black'];
       ctx.beginPath();
       ctx.strokeRect(topLeftX, topLeftY, colWidth, rowHeight);
+      ctx.fillStyle = colorToHexMapper[slotStatus];
       ctx.arc(topLeftX+colWidth/2, topLeftY+rowHeight/2, colWidth/2, 0, 2 * Math.PI);
       ctx.fill();
       ctx.strokeStyle = colorToHexMapper['black'];
