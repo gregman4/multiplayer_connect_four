@@ -91,8 +91,6 @@ function renderBoard(gameState) {
       // Set the fill style, stroke style (we want to outline of the box to be black always)
       // draw the box and fill it with the correct color based on who owns this game slot.
       ctx.fillStyle = colorToHexMapper[slotStatus];
-      //ctx.fillRect(topLeftX, topLeftY, colWidth, rowHeight);
-      //ctx.strokeRect(topLeftX, topLeftY, colWidth, rowHeight);
       ctx.beginPath();
       ctx.arc(topLeftX+colWidth/2, topLeftY+rowHeight/2, colWidth/2, 0, 2 * Math.PI);
       ctx.fill();
